@@ -58,7 +58,7 @@ plot_temp1.plot(time, temp1)
 
 plot_temp1.set_xlabel('Time')
 plot_temp1.set_ylabel('Temperature [°C]')
-plot_temp1.set_title('Temperature #1')
+plot_temp1.set_title('Temperature 1')
 
 for label in plot_temp1.xaxis.get_ticklabels():
     label.set_rotation(45)
@@ -70,7 +70,7 @@ plot_temp2.plot(time, temp2)
 
 plot_temp2.set_xlabel('Time')
 plot_temp2.set_ylabel('Temperature [°C]')
-plot_temp2.set_title('Temperature #2')
+plot_temp2.set_title('Temperature 2')
 
 for label in plot_temp2.xaxis.get_ticklabels():
     label.set_rotation(45)
