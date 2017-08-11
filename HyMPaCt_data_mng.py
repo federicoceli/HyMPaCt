@@ -21,9 +21,9 @@ while valid_file == False :
 
     # Just a friendly prompt
     if valid_file == True :
-        print("Sure, let me work on that\n")
+        print("Sure, let me work on that!\n")
     else:
-        print("Sorry, doesen't look right to me\n")
+        print("Sorry, doesen't look right to me!\n")
 
 # path = "C:\\Users\\fedce\\Desktop\\Hympact Log\\"
 # file = "2017-07-20 190400.xlsx"
