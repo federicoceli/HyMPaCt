@@ -8,6 +8,16 @@ from matplotlib import style
 from pathlib import Path
 import os.path
 
+# Formats the plots in the same fashion
+def format_plot(plot, title, ylable) :
+    plot.set_ylabel(ylable)
+    plot.set_title(title)
+
+    for label in plot.xaxis.get_ticklabels():
+        label.set_rotation(45)
+
+    plot.grid(True)
+
 # Valid file to process, flag
 valid_file = False
 
@@ -30,7 +40,7 @@ while valid_file == False :
     if valid_file == True :
         print("Sure, let me work on that!\n")
     elif user_file == '' :
-        print("Going to use dummy file")
+        print("Going to use dummy file\n")
         user_file_cleared = path + file
         valid_file = True
     else:
@@ -39,7 +49,7 @@ while valid_file == False :
 # Import data from excel file
 data = pd.read_excel(user_file_cleared)
 
-# Create a variable for the single columns
+# Create a variable for every single columns
 time    = data['Time']
 temp1   = data['Temp1']
 temp2   = data['Temp2']
@@ -55,54 +65,22 @@ f, ((plot_temp1, plot_temp2), (plot_voltage, plot_current)) = plt.subplots(2, 2)
 
 # Sub plot 1
 plot_temp1.plot(time, temp1)
-
-plot_temp1.set_xlabel('Time')
-plot_temp1.set_ylabel('Temperature [°C]')
-plot_temp1.set_title('Temperature 1')
-
-for label in plot_temp1.xaxis.get_ticklabels():
-    label.set_rotation(45)
-
-plot_temp1.grid(True)
+format_plot(plot_temp1, 'Temperature 1', 'Temperature [°C]')
 
 # Sub plot 2
 plot_temp2.plot(time, temp2)
-
-plot_temp2.set_xlabel('Time')
-plot_temp2.set_ylabel('Temperature [°C]')
-plot_temp2.set_title('Temperature 2')
-
-for label in plot_temp2.xaxis.get_ticklabels():
-    label.set_rotation(45)
-
-plot_temp2.grid(True)
+format_plot(plot_temp2, 'Temperature 2', 'Temperature [°C]')
 
 # Sub plot 3
 plot_voltage.plot(time, volt)
-
-plot_voltage.set_xlabel('Time')
-plot_voltage.set_ylabel('Tension [°V]')
-plot_voltage.set_title('TEC Voltage')
-
-for label in plot_voltage.xaxis.get_ticklabels():
-    label.set_rotation(45)
-
-plot_voltage.grid(True)
+format_plot(plot_voltage, 'TEC Voltage', 'Tension [V]')
 
 # Sub plot 4
-plot_current.plot(time, current)
-
-plot_current.set_xlabel('Time')
-plot_current.set_ylabel('Current [A]')
-plot_current.set_title('TEC Current')
-
-for label in plot_current.xaxis.get_ticklabels():
-    label.set_rotation(45)
-
-plot_current.grid(True)
+plot_current.plot(time, current)   
+format_plot(plot_current, 'TEC Current', 'Current [A]')
 
 # Show the plot
 plt.tight_layout()
 plt.show()
 
-print("The end")
+print("The end\n")
