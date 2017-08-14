@@ -2,11 +2,13 @@
 # August 2017 for HyMPaCt Project
 
 #import numpy as np
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
 from pathlib import Path
 import os.path
+from pylab import rcParams
 
 # Formats the plots in the same fashion
 def format_plot(plot, title, ylable) :
@@ -61,23 +63,39 @@ current = data['Current']
 style.use('seaborn-white')
 
 # Create a figure
-f, ((plot_temp1, plot_temp2), (plot_voltage, plot_current)) = plt.subplots(2, 2)
+f, ((plot_temp1, plot_temp2, plot_temp3), (plot_voltage, plot_current, plot_heatFlux)) = plt.subplots(2, 3)
 
-# Sub plot 1
+# Sub plot 11
 plot_temp1.plot(time, temp1)
 format_plot(plot_temp1, 'Temperature 1', 'Temperature [°C]')
 
-# Sub plot 2
+# Sub plot 12
 plot_temp2.plot(time, temp2)
 format_plot(plot_temp2, 'Temperature 2', 'Temperature [°C]')
 
-# Sub plot 3
+# Sub plot 13
+plot_temp3.plot(time, temp3)
+format_plot(plot_temp3, 'Temperature 3', 'Temperature [°C]')
+
+# Sub plot 21
 plot_voltage.plot(time, volt)
 format_plot(plot_voltage, 'TEC Voltage', 'Tension [V]')
 
-# Sub plot 4
+# Sub plot 22
 plot_current.plot(time, current)   
 format_plot(plot_current, 'TEC Current', 'Current [A]')
+
+# Sub plot 23
+plot_heatFlux.plot(time, current) # TODO just a place holder, change when data available  
+format_plot(plot_heatFlux, 'Heat Flux', 'Heat Flux [W/m**2]')
+
+# Resize figure 
+mng = plt.get_current_fig_manager()
+mng.resize(*mng.window.maxsize())
+
+# Better spacing between graphs
+f.wspace : 0.24
+f.hspace : 0.30
 
 # Show the plot
 plt.tight_layout()
