@@ -1,14 +1,19 @@
-# Createb by Federico Celi 
-# August 2017 for HyMPaCt Project
+""" 
+    Created by Federico Celi 
+    August 2017 for HyMPaCt Project
 
-#import numpy as np
+"""
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import style
 from pathlib import Path
 import os.path
-from pylab import rcParams
+
+# Window height and width
+W_HEIGHT = 1200
+W_WIDTH = 800   
 
 # Formats the plots in the same fashion
 def format_plot(plot, title, ylable) :
@@ -91,11 +96,9 @@ format_plot(plot_heatFlux, 'Heat Flux', 'Heat Flux [W/m**2]')
 
 # Resize figure 
 mng = plt.get_current_fig_manager()
-mng.resize(*mng.window.maxsize())
+mng.resize(W_HEIGHT, W_WIDTH)
 
-# Better spacing between graphs
-f.wspace : 0.24
-f.hspace : 0.30
+# TODO adjust wspace and hspace
 
 # Show the plot
 plt.tight_layout()
