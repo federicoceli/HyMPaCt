@@ -185,6 +185,7 @@ void setup() {
     /* Allow the MAX31865 to warm up. */
     delay(100);
     
+    // Connect RTD to read temperature data from PT-100
     connectRTD(rtd1, init_temp1);
     connectRTD(rtd2, init_temp2);
     connectRTD(rtd3, init_temp3);
