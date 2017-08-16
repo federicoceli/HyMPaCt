@@ -124,7 +124,7 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
     if (type == HYMPACT) {
         // Read from RTD and insert into packet
         // TODO if this works it has to be moved, tho
-        temp1 = readTemprature(rtd1);
+        temp1 = readTemprature(rtd1, init_temp1);
         packet[5] = (char)((temp1) >> 8);
         packet[6] = (char)(temp1);
 
