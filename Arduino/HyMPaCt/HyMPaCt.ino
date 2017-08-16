@@ -116,11 +116,11 @@ int readAcc(int analogPin) {
 
     if (micro_is_5V) // microcontroller runs off 5V
     {
-      scaled = mapf(raw, 0, 675, -scale, scale); // 3.3/5 * 1023 =~ 675
+      scaled = map(raw, 0, 675, -scale, scale); // 3.3/5 * 1023 =~ 675
     }
     else // microcontroller runs off 3.3V
     {
-      scaled = mapf(raw, 0, 1023, -scale, scale);
+      scaled = map(raw, 0, 1023, -scale, scale);
     }  
     return (int)(scaled*100);
 }
