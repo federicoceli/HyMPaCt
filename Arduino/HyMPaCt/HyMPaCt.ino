@@ -25,8 +25,15 @@ bool        init_temp1 = false;
 bool        init_temp2 = false;
 bool        init_temp3 = false;
 
-// Define digital pin for Accelerometer
-#define ACC_CD_PIN     20
+// Define analog pins for Accelerometer
+#define ACC_X       0
+#define ACC_Y       1
+#define ACC_Z       2
+
+int scale = 200;
+int micro_is_5V = false;
+
+bool        init_acc = false;
 
 // If a device is found not to be online, try and reconnect
 bool        auto_reconnect = true;
@@ -102,6 +109,10 @@ int readTemprature(MAX31865_RTD rtd, bool init_temp) {
     }
 }
 
+int readAcc(int analogPin) {
+    return analogRead(analogPin);
+}
+
 /**** Conncts to an RTD-to-digital interface with PT100 ****/
 bool connectRTD(MAX31865_RTD rtd, bool init_temp){
     /* Configure:
@@ -133,6 +144,11 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     
     // Populate with data I actually have
     dummyArray[0]  = readTemprature(rtd1, init_temp1);
+
+    // Acceleration
+    dummyArray[5] = readAcc(ACC_X);
+    dummyArray[6] = readAcc(ACC_Y);
+    dummyArray[7] = readAcc(ACC_Z);
 }
 
 /**** Assembles a full packet of given type and value(s) ****/
