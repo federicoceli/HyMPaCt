@@ -81,10 +81,11 @@ int readTemprature(MAX31865_RTD rtd, bool init_temp) {
     // Not connected
     if (init_temp == false) {
         return -1;
+        // Should I attempt to reconnect?
     }
     else {
         rtd.read_all();
-        if (rtd.status( ) == 0){
+        if (rtd.status() == 0){
             return (int)(rtd.temperature()*100);
         }
         else {
