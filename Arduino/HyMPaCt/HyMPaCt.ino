@@ -84,6 +84,8 @@ int readTemprature(MAX31865_RTD rtd, bool init_temp) {
     if (init_temp == false) {
         return -1;
         // Should I attempt to reconnect?
+        if (auto_reconnect)
+            connectRTD(rtd, init_temp);
     }
     else {
         rtd.read_all();
@@ -190,7 +192,6 @@ void setup() {
     connectRTD(rtd1, init_temp1);
     connectRTD(rtd2, init_temp2);
     connectRTD(rtd3, init_temp3);
-    
  }
 
 void loop() {
