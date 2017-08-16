@@ -79,7 +79,7 @@ int readTemprature(MAX31865_RTD rtd) {
   rtd.read_all();
   
   if(rtd.status() == 0) {
-    return rtd.temperature()*100;
+    return (int)(rtd.temperature()*100);
   }
   else {
     // Error
@@ -177,7 +177,7 @@ void setup() {
 }
 
 void loop() {
-  rndArray(tempArray, 8, 20, 30);
+  rndArray(tempArray, 16, 20, 30);
   pktAssemble(packet, HYMPACT, tempArray);
   //Serial.write(packet, PKTL);
   for( int n = 0; n < PKTL; n++ )
