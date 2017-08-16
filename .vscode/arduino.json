@@ -1,3 +1,5 @@
 {
-    "board": "arduino:sam:arduino_due_x_dbg"
+    "board": "arduino:sam:arduino_due_x_dbg",
+    "sketch": "Arduino\\HyMPaCt\\HyMPaCt.ino",
+    "port": "COM7"
 }

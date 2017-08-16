@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <MAX31865.h>
 
-/**** Variable definition ****/
+/**** Variables definition ****/
 // Define Serial Protocol
 #define SYNC_0    0b10110100
 #define SYNC_1    0b11110000
@@ -83,7 +83,7 @@ double readTemprature(MAX31865_RTD rtd) {
   }
   else {
     // Error
-    return -8001
+    return -8001;
   }
 }
 
@@ -96,8 +96,10 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
 
 /**** Assembles a full packet of given type and value(s) ****/
 void pktAssemble(unsigned char* packet, int type, int value[]) {
-  uint16_t checkSum = 0;
-  uint16_t crc = 0;
+  uint16_t  checkSum = 0;
+  uint16_t  crc = 0;
+
+  double    temp1;
   
   // synchronization word   [0-1]
   packet[0] = SYNC_0;
@@ -110,18 +112,24 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
   packet[3] = (char)((seq_number[type]) >> 8);  
   packet[4] = (char)(seq_number[type]++);
 
-  // data (8 sets of 4 byte)  [5-36]
+  // data (16 sets of 2 byte) [5-36]
   if (type == HYMPACT) {
-    for (int set = 0; set < 8; set++)
-      for (int byte = 0; byte < 4; byte++)
-        packet[5 + set * 4 + byte] = (char)((value[set] >> 8 * (3 - byte)));
+    // Read from RTD and insert into packet
+    // TODO if this works it has to be moved, tho
+    temp1 = readTemprature(rtd1);
+    packet[5] = (char)((temp1) >> 8);
+    packet[6] = (char)(temp1);
+
+    for (int set = 1; set < 16; set++)
+        for (int byte = 0; byte < 2; byte++)
+          packet[5 + set * 2 + byte] = (char)((value[set] >> 8 * (1 - byte)));
   }
 
   // data (16 sets of 2 byte) [5-36]
   else {
-    for (int set = 0; set < 16; set++)
-      for (int byte = 0; byte < 2; byte++)
-        packet[5 + set * 2 + byte] = (char)((value[set] >> 8 * (1 - byte)));
+    for (int set = 0; set < 8; set++)
+        for (int byte = 0; byte < 4; byte++)
+        packet[5 + set * 4 + byte] = (char)((value[set] >> 8 * (3 - byte)));
   }
 
   // checksum         [37-38]
