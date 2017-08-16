@@ -25,6 +25,9 @@ bool        init_temp1 = false;
 bool        init_temp2 = false;
 bool        init_temp3 = false;
 
+// If a device is found not to be online, try and reconnect
+bool        auto_reconnect = true;
+
 unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
 int             dummyArray[8] = { 24, 20, 200, -300, -5, 31, 32, -56 },
@@ -71,7 +74,6 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
         if (bit_flag) {
             out ^= CRC16;
         }
-
     }
     return out;
 }
@@ -93,6 +95,28 @@ int readTemprature(MAX31865_RTD rtd, bool init_temp) {
             return -2;
         }
     }
+}
+
+/**** Conncts to an RTD-to-digital interface with PT100 ****/
+bool connectRTD(MAX31865_RTD rtd, bool init_temp){
+    /* Configure:
+        V_BIAS enabled
+        Auto-conversion
+        1-shot disabled
+        3-wire enabled
+        Fault detection:  automatic delay
+        Fault status:  auto-clear
+        50 Hz filter
+        Low threshold:  0x0000
+        High threshold:  0x7fff
+    */
+    rtd.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
+        true, true, 0x0000, 0x7fff);
+    
+        if (rtd.read_all( ) == 255)
+        init_temp = false;
+    else
+        init_temp = true;  
 }
 
 /**** Generates a randomly populated array ****/
@@ -152,7 +176,6 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
     //cout << "CRC = " << crc << "; [39] = " << (int)packet[39] << ", [40] = " << (int)packet[40] << "\n";
 }
 
-
 void setup() {
     Serial.begin(9600);
 
@@ -164,39 +187,9 @@ void setup() {
     /* Allow the MAX31865 to warm up. */
     delay(100);
     
-    /* Configure:
-        V_BIAS enabled
-        Auto-conversion
-        1-shot disabled
-        3-wire enabled
-        Fault detection:  automatic delay
-        Fault status:  auto-clear
-        50 Hz filter
-        Low threshold:  0x0000
-        High threshold:  0x7fff
-    */
-    
-    rtd1.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
-                    true, true, 0x0000, 0x7fff);
-    rtd2.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
-                    true, true, 0x0000, 0x7fff);
-    rtd3.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
-                    true, true, 0x0000, 0x7fff); 
-    
-    if (rtd1.read_all( ) == 255)
-        init_temp1 = false;
-    else
-        init_temp1 = true;
-
-    if (rtd2.read_all( ) == 255)
-        init_temp2 = false;
-    else
-        init_temp2 = true;
-
-    if (rtd3.read_all( ) == 255)
-        init_temp2 = false;
-    else
-        init_temp2 = true;
+    connectRTD(rtd1, init_temp1);
+    connectRTD(rtd2, init_temp2);
+    connectRTD(rtd3, init_temp3);
     
  }
 
