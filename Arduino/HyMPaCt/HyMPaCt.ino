@@ -179,10 +179,9 @@ void setup() {
 void loop() {
     rndArray(tempArray, 16, 20, 30);
     pktAssemble(packet, HYMPACT, tempArray);
-    //Serial.write(packet, PKTL);
-    for( int n = 0; n < PKTL; n++ )
-    {
-    Serial.write(packet[n]);
+    
+    for( int n = 0; n < PKTL; n++ ) {
+        Serial.write(packet[n]);
     }
 
     delay(50);
