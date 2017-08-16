@@ -21,6 +21,10 @@ MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1);
 MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2);
 MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3);
 
+bool        init_temp1 = false;
+bool        init_temp2 = false;
+bool        init_temp3 = false;
+
 unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
 int             dummyArray[8] = { 24, 20, 200, -300, -5, 31, 32, -56 },
@@ -73,17 +77,20 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 }
 
 /**** Reads temperature from RTD ****/
-int readTemprature(MAX31865_RTD rtd) {
-  //rtd.read_all();
-  
-  //if(rtd.status() == 0) {
-    if (true){
-    //return (int)(rtd.temperature()*100);
-        return 1;
+int readTemprature(MAX31865_RTD rtd, bool init_temp) {
+    // Not connected
+    if (init_temp == false) {
+        return -1;
     }
     else {
-        // Error
-        return -1;
+        rtd.read_all();
+        if (rtd.status( ) == 0){
+            return (int)(rtd.temperature()*100);
+        }
+        else {
+            // Error
+            return -2;
+        }
     }
 }
 
@@ -173,13 +180,29 @@ void setup() {
     rtd2.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
                     true, true, 0x0000, 0x7fff);
     rtd3.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
-                    true, true, 0x0000, 0x7fff);               
+                    true, true, 0x0000, 0x7fff); 
+    
+    if (rtd1.read_all( ) == 255)
+        init_temp1 = false;
+    else
+        init_temp1 = true;
+
+    if (rtd2.read_all( ) == 255)
+        init_temp2 = false;
+    else
+        init_temp2 = true;
+
+    if (rtd3.read_all( ) == 255)
+        init_temp2 = false;
+    else
+        init_temp2 = true;
+    
  }
 
 void loop() {
     rndArray(tempArray, 16, 20, 30);
     pktAssemble(packet, HYMPACT, tempArray);
-    
+
     for( int n = 0; n < PKTL; n++ ) {
         Serial.write(packet[n]);
     }
