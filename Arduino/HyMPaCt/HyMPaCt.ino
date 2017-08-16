@@ -17,6 +17,10 @@
 #define RTD_CS_PIN2   12
 #define RTD_CS_PIN3   13
 
+MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1);
+MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2);
+MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3);
+
 unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
 int             dummyArray[8] = { 24, 20, 200, -300, -5, 31, 32, -56 },
@@ -121,7 +125,31 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
 
 
 void setup() {
-  Serial.begin(9600); 
+  Serial.begin(9600);
+
+  /* Initialize SPI communication. */
+  SPI.begin();
+  SPI.setClockDivider(SPI_CLOCK_DIV16);
+  SPI.setDataMode(SPI_MODE3);
+  
+  /* Allow the MAX31865 to warm up. */
+  delay(100);
+  
+  /* Configure:
+  
+       V_BIAS enabled
+       Auto-conversion
+       1-shot disabled
+       3-wire enabled
+       Fault detection:  automatic delay
+       Fault status:  auto-clear
+       50 Hz filter
+       Low threshold:  0x0000
+       High threshold:  0x7fff
+  */
+  
+  rtd.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
+                 true, true, 0x0000, 0x7fff);
 }
 
 void loop() {
