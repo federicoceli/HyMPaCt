@@ -1,3 +1,5 @@
+#include <MAX31865.h>
+
 /**** Variable definition ****/
 // Define Serial Protocol
 #define SYNC_0    0b10110100
