@@ -110,18 +110,19 @@ int readTemprature(MAX31865_RTD rtd, bool init_temp) {
 }
 
 int readAcc(int analogPin) {
+    // TODO: being an Arduino Due, the precision can be improved to 12 bit
     int raw = analogRead(analogPin);
-    int scaled = 0;
+    float scaled = 0;
 
     if (micro_is_5V) // microcontroller runs off 5V
     {
-      scaled = mapf(raw, 0, 675, -scale, scale)*100; // 3.3/5 * 1023 =~ 675
+      scaled = mapf(raw, 0, 675, -scale, scale); // 3.3/5 * 1023 =~ 675
     }
     else // microcontroller runs off 3.3V
     {
-      scaled = mapf(raw, 0, 1023, -scale, scale)*100;
+      scaled = mapf(raw, 0, 1023, -scale, scale);
     }  
-    return scaled;
+    return (int)(scaled*100);
 }
 
 /**** Conncts to an RTD-to-digital interface with PT100 ****/
