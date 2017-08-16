@@ -136,7 +136,6 @@ void setup() {
   delay(100);
   
   /* Configure:
-  
        V_BIAS enabled
        Auto-conversion
        1-shot disabled
@@ -148,8 +147,12 @@ void setup() {
        High threshold:  0x7fff
   */
   
-  rtd.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
+  rtd1.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
                  true, true, 0x0000, 0x7fff);
+  rtd2.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
+                 true, true, 0x0000, 0x7fff);
+  rtd3.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
+                 true, true, 0x0000, 0x7fff);               
 }
 
 void loop() {
