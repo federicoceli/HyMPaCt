@@ -1,6 +1,6 @@
 """ 
     Created by Federico Celi 
-    August 2017 for HyMPaCt Project
+    August 2017 for HyMPaCt Project 
 
 """
 
@@ -13,7 +13,7 @@ import os.path
 
 # Window height and width
 W_HEIGHT = 1200
-W_WIDTH = 800   
+W_WIDTH = 850   
 
 # Formats the plots in the same fashion
 def format_plot(plot, title, ylable) :
