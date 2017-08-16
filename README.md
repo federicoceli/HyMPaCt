@@ -10,6 +10,9 @@ For more information, please visit the project's official page: http://retis.sss
 ### Temperature acquisistion with MAX31865
 The acquisition software for the RTD-to-digital sensor is largerly based on the library and origianl code provided by olewolf and Charles-Henri Hallard, at https://github.com/hallard/arduino-max31865
 
+### Ground Station
+The Ground Station is developed with LabVIEW 2017; due to the nature of LabVIEW files and workflow, the source "code" is not uploded on git. If interested we are happy to share it upon request.
+
 ## Contacts
 For more info, checkout:
 * LinkedIn page @: https://www.linkedin.com/company-beta/11171445/
