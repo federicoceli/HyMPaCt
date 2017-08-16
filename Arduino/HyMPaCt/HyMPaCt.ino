@@ -154,7 +154,7 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
 
     // data (16 sets of 2 byte) [5-36]
     if (type == HYMPACT) {
-        for (int set = 1; set < 16; set++)
+        for (int set = 0; set < 16; set++)
             for (int byte = 0; byte < 2; byte++)
             packet[5 + set * 2 + byte] = (char)((value[set] >> 8 * (1 - byte)));
     }
