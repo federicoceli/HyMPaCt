@@ -123,9 +123,15 @@ bool connectRTD(MAX31865_RTD rtd, bool init_temp){
 
 /**** Generates a randomly populated array ****/
 void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
+    // Random preventive population
     for (int i = 0; i < lenght; i++) {
         dummyArray[i] = random(min_v, max_v);
     }
+    
+    // Populate with data I actually have
+    temp1 = readTemprature(rtd1, init_temp1);
+    dummyArray[5] = (char)((temp1) >> 8);
+    dummyArray[6] = (char)(temp1);
 }
 
 /**** Assembles a full packet of given type and value(s) ****/
@@ -148,12 +154,6 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
 
     // data (16 sets of 2 byte) [5-36]
     if (type == HYMPACT) {
-        // Read from RTD and insert into packet
-        // TODO if this works it has to be moved, tho
-        temp1 = readTemprature(rtd1, init_temp1);
-        packet[5] = (char)((temp1) >> 8);
-        packet[6] = (char)(temp1);
-
         for (int set = 1; set < 16; set++)
             for (int byte = 0; byte < 2; byte++)
             packet[5 + set * 2 + byte] = (char)((value[set] >> 8 * (1 - byte)));
