@@ -74,6 +74,19 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size)
   return out;
 }
 
+/**** Reads temperature from RTD ****/
+double readTemprature(MAX31865_RTD rtd) {
+  rtd.read_all();
+  
+  if(rtd.status() == 0) {
+    return rtd.temperature();
+  }
+  else {
+    // Error
+    return -8001
+  }
+}
+
 /**** Generates a randomly populated array ****/
 void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
   for (int i = 0; i < lenght; i++) {
