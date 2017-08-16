@@ -115,7 +115,7 @@ bool connectRTD(MAX31865_RTD rtd, bool init_temp){
     rtd.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
     
-        if (rtd.read_all( ) == 255)
+    if (rtd.read_all( ) == 255)
         init_temp = false;
     else
         init_temp = true;  
@@ -129,17 +129,13 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     }
     
     // Populate with data I actually have
-    temp1 = readTemprature(rtd1, init_temp1);
-    dummyArray[5] = (char)((temp1) >> 8);
-    dummyArray[6] = (char)(temp1);
+    dummyArray[0]  = readTemprature(rtd1, init_temp1);
 }
 
 /**** Assembles a full packet of given type and value(s) ****/
 void pktAssemble(unsigned char* packet, int type, int value[]) {
     uint16_t  checkSum = 0;
     uint16_t  crc = 0;
-
-    int       temp1;
     
     // synchronization word   [0-1]
     packet[0] = SYNC_0;
