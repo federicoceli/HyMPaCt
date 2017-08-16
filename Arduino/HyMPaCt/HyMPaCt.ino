@@ -76,15 +76,17 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size)
 
 /**** Reads temperature from RTD ****/
 int readTemprature(MAX31865_RTD rtd) {
-  rtd.read_all();
+  //rtd.read_all();
   
-  if(rtd.status() == 0) {
-    return (int)(rtd.temperature()*100);
-  }
-  else {
-    // Error
-    return -8001;
-  }
+  //if(rtd.status() == 0) {
+    if (true){
+    //return (int)(rtd.temperature()*100);
+        return 1;
+    }
+    else {
+        // Error
+        return -1;
+    }
 }
 
 /**** Generates a randomly populated array ****/
