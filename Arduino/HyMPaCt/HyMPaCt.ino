@@ -25,6 +25,9 @@ bool        init_temp1 = false;
 bool        init_temp2 = false;
 bool        init_temp3 = false;
 
+// Define digital pin for Accelerometer
+#define ACC_CD_PIN     20
+
 // If a device is found not to be online, try and reconnect
 bool        auto_reconnect = true;
 
@@ -189,6 +192,8 @@ void setup() {
     connectRTD(rtd1, init_temp1);
     connectRTD(rtd2, init_temp2);
     connectRTD(rtd3, init_temp3);
+
+    // Connect to Accelerometer
  }
 
 void loop() {
