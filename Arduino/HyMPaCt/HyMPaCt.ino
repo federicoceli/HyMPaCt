@@ -1,3 +1,4 @@
+#include <SPI.h>
 #include <MAX31865.h>
 
 /**** Variable definition ****/
@@ -8,8 +9,13 @@
 // Define message type
 #define HYMPACT   0b00001001
 
-#define PKTL    41
-#define CRC16   0x8005
+#define PKTL      41
+#define CRC16     0x8005
+
+// Define digital pins for RTD-to-digital sensors
+#define RTD_CS_PIN1   11
+#define RTD_CS_PIN2   12
+#define RTD_CS_PIN3   13
 
 unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
