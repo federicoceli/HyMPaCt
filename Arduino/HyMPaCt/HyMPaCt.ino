@@ -75,11 +75,11 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size)
 }
 
 /**** Reads temperature from RTD ****/
-double readTemprature(MAX31865_RTD rtd) {
+int readTemprature(MAX31865_RTD rtd) {
   rtd.read_all();
   
   if(rtd.status() == 0) {
-    return rtd.temperature();
+    return rtd.temperature()*100;
   }
   else {
     // Error
@@ -99,7 +99,7 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
   uint16_t  checkSum = 0;
   uint16_t  crc = 0;
 
-  double    temp1;
+  int       temp1;
   
   // synchronization word   [0-1]
   packet[0] = SYNC_0;
