@@ -30,8 +30,8 @@ bool        init_temp3 = false;
 #define ACC_Y       1
 #define ACC_Z       2
 
-int scale = 200;
-int micro_is_5V = false;
+// The sensor can meausre up to \pm 200 g
+int         scale_acc = 200;
 
 bool        init_acc = false;
 
@@ -114,7 +114,7 @@ int readAcc(int analogPin) {
     float scaled = 0;
 
     // Convert from Volts to Acceleration
-    scaled = map(raw, 0, 4095, -scale, scale);
+    scaled = map(raw, 0, 4095, -scale_acc, scale_acc);
      
     return (int)(scaled*100);
 }
@@ -151,9 +151,11 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     // Populate with data I actually have
     dummyArray[0]  = readTemprature(rtd1, init_temp1);
 
-    // Acceleration
+    // Acceleration, X-Axis
     dummyArray[5] = readAcc(ACC_X);
+    // Acceleration, Y-Axis
     dummyArray[6] = readAcc(ACC_Y);
+    // Acceleration, Z-Axis
     dummyArray[7] = readAcc(ACC_Z);
 }
 
