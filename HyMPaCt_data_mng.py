@@ -62,9 +62,9 @@ temp1   = data['Temp1']
 temp2   = data['Temp2']
 temp3   = data['Temp3']
 
-acc_x   = data['Sequence']
-#acc_y   = data['ACC_Y']
-#acc_z   = data['ACC_Z']
+acc_x   = data['ACC_X']
+acc_y   = data['ACC_Y']
+acc_z   = data['ACC_Z']
 
 volt    = data['Voltage']
 current = data['Current']
@@ -97,6 +97,8 @@ format_plot(plot_current, 'TEC Current', 'Current [A]')
 
 # Sub plot 23
 plot_acc.plot(time, acc_x)
+plot_acc.plot(time, acc_y)
+plot_acc.plot(time, acc_z)
 format_plot(plot_acc, '3-Axis Acceleration', 'Accelerartion [g]')
 
 # Resize figure 
