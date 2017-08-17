@@ -57,15 +57,15 @@ while valid_file == False :
 data = pd.read_excel(user_file_cleared)
 
 # Create a variable for every single columns
-time    = data['Time']/100
-temp1   = data['Temp1']/100
-temp2   = data['Temp2']/100
-temp3   = data['Temp3']/100
-volt    = data['Voltage']/100
-current = data['Current']/100
-acc_x   = data['ACC_X']/100
-acc_y   = data['ACC_Y']/100
-acc_z   = data['ACC_Z']/100
+time    = data['Time']
+temp1   = data['Temp1']
+temp2   = data['Temp2']
+temp3   = data['Temp3']
+volt    = data['Voltage']
+current = data['Current']
+acc_x   = data['ACC_X']
+acc_y   = data['ACC_Y']
+acc_z   = data['ACC_Z']
 
 # Use better looking style
 style.use('seaborn-white')
