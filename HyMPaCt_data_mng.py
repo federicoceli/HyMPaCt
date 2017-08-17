@@ -57,18 +57,21 @@ while valid_file == False :
 data = pd.read_excel(user_file_cleared)
 
 # Create a variable for every single columns
-time    = data['Time']
-temp1   = data['Temp1']
-temp2   = data['Temp2']
-temp3   = data['Temp3']
-volt    = data['Voltage']
-current = data['Current']
+time    = data['Time']/100
+temp1   = data['Temp1']/100
+temp2   = data['Temp2']/100
+temp3   = data['Temp3']/100
+volt    = data['Voltage']/100
+current = data['Current']/100
+acc_x   = data['ACC_X']/100
+acc_y   = data['ACC_Y']/100
+acc_z   = data['ACC_Z']/100
 
 # Use better looking style
 style.use('seaborn-white')
 
 # Create a figure
-f, ((plot_temp1, plot_temp2, plot_temp3), (plot_voltage, plot_current, plot_heatFlux)) = plt.subplots(2, 3)
+f, ((plot_temp1, plot_temp2, plot_temp3), (plot_voltage, plot_current, plot_acc)) = plt.subplots(2, 3)
 
 # Sub plot 11
 plot_temp1.plot(time, temp1)
@@ -91,8 +94,8 @@ plot_current.plot(time, current)
 format_plot(plot_current, 'TEC Current', 'Current [A]')
 
 # Sub plot 23
-plot_heatFlux.plot(time, current) # TODO just a place holder, change when data available  
-format_plot(plot_heatFlux, 'Heat Flux', 'Heat Flux [W/m**2]')
+plot_acc.plot(time, acc_x)
+format_plot(plot_acc, '3-Axis Acceleration', 'Accelerartion [g]')
 
 # Resize figure 
 mng = plt.get_current_fig_manager()
