@@ -145,7 +145,7 @@ bool connectRTD(MAX31865_RTD rtd, bool init_temp){
 void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     // Random preventive population
     for (int i = 0; i < lenght; i++) {
-        dummyArray[i] = random(min_v, max_v);
+        dummyArray[i] = random(min_v, max_v)*100;
     }
     
     // Populate with data I actually have
