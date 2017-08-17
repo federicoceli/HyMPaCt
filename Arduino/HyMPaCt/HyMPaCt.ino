@@ -110,18 +110,12 @@ int readTemprature(MAX31865_RTD rtd, bool init_temp) {
 }
 
 int readAcc(int analogPin) {
-    // TODO: being an Arduino Due, the precision can be improved to 12 bit
     int raw = analogRead(analogPin);
     float scaled = 0;
 
-    if (micro_is_5V) // microcontroller runs off 5V
-    {
-      scaled = map(raw, 0, 675, -scale, scale); // 3.3/5 * 1023 =~ 675
-    }
-    else // microcontroller runs off 3.3V
-    {
-      scaled = map(raw, 0, 1023, -scale, scale);
-    }  
+    // Convert from Volts to Acceleration
+    scaled = map(raw, 0, 4095, -scale, scale);
+     
     return (int)(scaled*100);
 }
 
@@ -207,6 +201,9 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
 
 void setup() {
     Serial.begin(9600);
+
+    // Set ADC to 12 bit
+    analogReadResolution(12);
 
     /* Initialize SPI communication. */
     SPI.begin();
