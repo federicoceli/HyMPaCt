@@ -202,7 +202,7 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
 }
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Set ADC to 12 bit
     analogReadResolution(12);
@@ -231,5 +231,5 @@ void loop() {
         Serial.write(packet[n]);
     }
 
-    delay(50);
+    delay(100);
 }
