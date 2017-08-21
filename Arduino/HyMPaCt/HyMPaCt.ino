@@ -13,13 +13,16 @@
 #define CRC16     0x8005
 
 // Define digital pins for RTD-to-digital sensors
-#define RTD_CS_PIN1   11
-#define RTD_CS_PIN2   12
-#define RTD_CS_PIN3   13
+#define RTD_CS_PIN1   41
+#define RTD_CS_PIN2   43
+#define RTD_CS_PIN3   45
 
-MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1);
-MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2);
-MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3);
+// Reference resistance in Ohm
+#define RREF          430.0
+
+MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF);
+MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF);
+MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF);
 
 bool        init_temp1 = false;
 bool        init_temp2 = false;
@@ -132,13 +135,17 @@ bool connectRTD(MAX31865_RTD rtd, bool init_temp){
         Low threshold:  0x0000
         High threshold:  0x7fff
     */
-    rtd.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
+    rtd.configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
+
+    Serial.println(rtd.read_all());
     
     if (rtd.read_all( ) == 255)
         init_temp = false;
     else
-        init_temp = true;  
+        init_temp = true;
+
+    return init_temp;
 }
 
 /**** Generates a randomly populated array ****/
@@ -216,9 +223,9 @@ void setup() {
     delay(100);
     
     // Connect RTD to read temperature data from PT-100
-    connectRTD(rtd1, init_temp1);
-    connectRTD(rtd2, init_temp2);
-    connectRTD(rtd3, init_temp3);
+    init_temp1 = connectRTD(rtd1, init_temp1);
+    init_temp2 = connectRTD(rtd2, init_temp2);
+    init_temp3 = connectRTD(rtd3, init_temp3);
 
     // Connect to Accelerometer
  }
@@ -228,7 +235,7 @@ void loop() {
     pktAssemble(packet, HYMPACT, tempArray);
 
     for( int n = 0; n < PKTL; n++ ) {
-        Serial.write(packet[n]);
+    //    Serial.write(packet[n]);
     }
 
     delay(100);
