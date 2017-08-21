@@ -20,7 +20,7 @@
 // Reference resistance in Ohm
 #define RREF          430.0
 
-MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF);
+MAX31865_RTD rtd1[1] = {MAX31865_RTD(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF)};
 MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF);
 MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF);
 
@@ -41,7 +41,7 @@ unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
 int             dummyArray[8] = { 24, 20, 200, -300, -5, 31, 32, -56 },
                 tempArray[8];
-
+int a[1] = {0};
 /**** Checksum calculation ****/
 uint16_t calculateCheckSum(unsigned char *buf, unsigned int n) {
   uint16_t checksum = 0;
@@ -88,23 +88,23 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 }
 
 /**** Reads temperature from RTD ****/
-int readTemprature(MAX31865_RTD& rtd) {
+int readTemprature(MAX31865_RTD* rtd) {
     int ret = 0;
-    //Serial.println("OK");
+    Serial.println("OK");
     
-    //rtd.read_all();
+    rtd[0].read_all();
     
-    //Serial.print("Status: "); Serial.println(rtd.status());
+    Serial.print("Status: "); Serial.println(rtd[0].status());
         
-    if (rtd.status() == 0){
-        ret = rtd.temperature();
+    if (rtd[0].status() == 0){
+        ret = rtd[0].temperature();
     }
     else {
         // Error
         ret = -2;
     }
 
-    //Serial.print("Value: "); Serial.println(ret);
+    Serial.print("Value: "); Serial.println(ret);
     return ret;
 }
 
@@ -115,7 +115,7 @@ int readAcc(int analogPin) {
 }
 
 /**** Conncts to an RTD-to-digital interface with PT100 ****/
-bool connectRTD(MAX31865_RTD& rtd){
+bool connectRTD(MAX31865_RTD* rtd){
     /* Configure:
         V_BIAS enabled
         Auto-conversion
@@ -127,7 +127,7 @@ bool connectRTD(MAX31865_RTD& rtd){
         Low threshold:  0x0000
         High threshold:  0x7fff
     */
-    rtd.configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
+    rtd->configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
 }
 
@@ -206,7 +206,16 @@ void setup() {
     delay(100);
     
     // Connect RTD to read temperature data from PT-100
-    connectRTD(rtd1);
+    //connectRTD(rtd1);
+    rtd1[0].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
+        true, true, 0x0000, 0x7fff);
+    
+    Serial.println("+");
+    rtd1[0].read_all();
+    Serial.println(rtd1[0].temperature());
+    Serial.println("++");
+    a[0] = 1;
+    Serial.println(a[0]);
     //init_temp2 = connectRTD(rtd2, init_temp2);
     //init_temp3 = connectRTD(rtd3, init_temp3);
 
@@ -219,8 +228,12 @@ void loop() {
     pktAssemble(packet, HYMPACT, tempArray);
 
     for( int n = 0; n < PKTL; n++ ) {
-        Serial.write(packet[n]);
+        //Serial.write(packet[n]);
     }
-
+    Serial.println(a[0]);
+    Serial.println("+");
+    rtd1[0].read_all();
+    Serial.println(rtd1[0].temperature());
+    Serial.println("++");
     delay(100);
 }
