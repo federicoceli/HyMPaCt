@@ -24,10 +24,6 @@ MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF);
 MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF);
 MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF);
 
-bool        init_temp1 = false;
-bool        init_temp2 = false;
-bool        init_temp3 = false;
-
 // Define analog pins for Accelerometer
 #define ACC_X       0
 #define ACC_Y       1
@@ -92,46 +88,34 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 }
 
 /**** Reads temperature from RTD ****/
-int readTemprature(MAX31865_RTD& rtd, bool& init_temp) {
+int readTemprature(MAX31865_RTD& rtd) {
     int ret = 0;
-    Serial.println("OK");
-    // Not connected
-    if (&init_temp == false) {
-        // Should I attempt to reconnect?
-        if (auto_reconnect)
-            //connectRTD(rtd, init_temp);
-        ret = -1;
+    //Serial.println("OK");
+    
+    //rtd.read_all();
+    
+    //Serial.print("Status: "); Serial.println(rtd.status());
+        
+    if (rtd.status() == 0){
+        ret = rtd.temperature();
     }
     else {
-        rtd.read_all();
-       
-        Serial.println(rtd.status());
-        
-        if (rtd.status() == 0){
-            ret = rtd.temperature();
-        }
-        else {
-            // Error
-            ret = -2;
-        }
+        // Error
+        ret = -2;
     }
 
-    Serial.println(ret);
+    //Serial.print("Value: "); Serial.println(ret);
     return ret;
 }
 
+/**** Read analog value "as is" ****/
 int readAcc(int analogPin) {
     int raw = analogRead(analogPin);
-    float scaled = 0;
-
-    // Convert from Volts to Acceleration
-    scaled = map(raw, 0, 4095, -scale_acc, scale_acc);
-     
-    return (int)(scaled*100);
+    return raw;
 }
 
 /**** Conncts to an RTD-to-digital interface with PT100 ****/
-bool connectRTD(MAX31865_RTD& rtd, bool& init_temp){
+bool connectRTD(MAX31865_RTD& rtd){
     /* Configure:
         V_BIAS enabled
         Auto-conversion
@@ -145,13 +129,6 @@ bool connectRTD(MAX31865_RTD& rtd, bool& init_temp){
     */
     rtd.configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
-    
-    if (rtd.read_all( ) == 255)
-        init_temp = false;
-    else
-        init_temp = true;
-
-    return init_temp;
 }
 
 /**** Generates a randomly populated array ****/
@@ -162,7 +139,7 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     }
     
     // Populate with data I actually have
-    dummyArray[0] = readTemprature(rtd1, init_temp1);
+    //dummyArray[0] = readTemprature(rtd1);
 
     // Acceleration, X-Axis
     dummyArray[5] = readAcc(ACC_X);
@@ -229,7 +206,7 @@ void setup() {
     delay(100);
     
     // Connect RTD to read temperature data from PT-100
-    connectRTD(rtd1, init_temp1);
+    connectRTD(rtd1);
     //init_temp2 = connectRTD(rtd2, init_temp2);
     //init_temp3 = connectRTD(rtd3, init_temp3);
 
@@ -242,7 +219,7 @@ void loop() {
     pktAssemble(packet, HYMPACT, tempArray);
 
     for( int n = 0; n < PKTL; n++ ) {
-        //Serial.write(packet[n]);
+        Serial.write(packet[n]);
     }
 
     delay(100);
