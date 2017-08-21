@@ -39,7 +39,7 @@ int         scale_acc = 200;
 bool        init_acc = false;
 
 // If a device is found not to be online, try and reconnect
-bool        auto_reconnect = true;
+bool        auto_reconnect = false;
 
 unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
@@ -92,24 +92,32 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 }
 
 /**** Reads temperature from RTD ****/
-int readTemprature(MAX31865_RTD rtd, bool init_temp) {
+int readTemprature(MAX31865_RTD& rtd, bool& init_temp) {
+    int ret = 0;
+    Serial.println("OK");
     // Not connected
-    if (init_temp == false) {
-        return -1;
+    if (&init_temp == false) {
         // Should I attempt to reconnect?
         if (auto_reconnect)
-            connectRTD(rtd, init_temp);
+            //connectRTD(rtd, init_temp);
+        ret = -1;
     }
     else {
         rtd.read_all();
+       
+        Serial.println(rtd.status());
+        
         if (rtd.status() == 0){
-            return (int)(rtd.temperature()*100);
+            ret = rtd.temperature();
         }
         else {
             // Error
-            return -2;
+            ret = -2;
         }
     }
+
+    Serial.println(ret);
+    return ret;
 }
 
 int readAcc(int analogPin) {
@@ -123,7 +131,7 @@ int readAcc(int analogPin) {
 }
 
 /**** Conncts to an RTD-to-digital interface with PT100 ****/
-bool connectRTD(MAX31865_RTD rtd, bool init_temp){
+bool connectRTD(MAX31865_RTD& rtd, bool& init_temp){
     /* Configure:
         V_BIAS enabled
         Auto-conversion
@@ -154,7 +162,7 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     }
     
     // Populate with data I actually have
-    dummyArray[0]  = readTemprature(rtd1, init_temp1);
+    dummyArray[0] = readTemprature(rtd1, init_temp1);
 
     // Acceleration, X-Axis
     dummyArray[5] = readAcc(ACC_X);
@@ -221,9 +229,10 @@ void setup() {
     delay(100);
     
     // Connect RTD to read temperature data from PT-100
-    init_temp1 = connectRTD(rtd1, init_temp1);
-    init_temp2 = connectRTD(rtd2, init_temp2);
-    init_temp3 = connectRTD(rtd3, init_temp3);
+    connectRTD(rtd1, init_temp1);
+    //init_temp2 = connectRTD(rtd2, init_temp2);
+    //init_temp3 = connectRTD(rtd3, init_temp3);
+
 
     // Connect to Accelerometer
  }
@@ -233,7 +242,7 @@ void loop() {
     pktAssemble(packet, HYMPACT, tempArray);
 
     for( int n = 0; n < PKTL; n++ ) {
-        Serial.write(packet[n]);
+        //Serial.write(packet[n]);
     }
 
     delay(100);
