@@ -137,8 +137,6 @@ bool connectRTD(MAX31865_RTD rtd, bool init_temp){
     */
     rtd.configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
-
-    Serial.println(rtd.read_all());
     
     if (rtd.read_all( ) == 255)
         init_temp = false;
@@ -235,7 +233,7 @@ void loop() {
     pktAssemble(packet, HYMPACT, tempArray);
 
     for( int n = 0; n < PKTL; n++ ) {
-    //    Serial.write(packet[n]);
+        Serial.write(packet[n]);
     }
 
     delay(100);
