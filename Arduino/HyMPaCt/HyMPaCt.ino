@@ -89,7 +89,7 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 
 /**** Reads temperature from RTD ****/
 int readTemprature(MAX31865_RTD* rtd) {
-    int ret = 0;
+    float ret = 0;
     Serial.println("OK");
     
     rtd[0].read_all();
@@ -97,14 +97,14 @@ int readTemprature(MAX31865_RTD* rtd) {
     Serial.print("Status: "); Serial.println(rtd[0].status());
         
     if (rtd[0].status() == 0){
-        ret = rtd[0].temperature();
+        ret = rtd[0].temperature()*100;
     }
     else {
         // Error
         ret = -2;
     }
 
-    Serial.print("Value: "); Serial.println(ret);
+    Serial.print("Value: "); Serial.println(ret/100);
     return ret;
 }
 
@@ -209,31 +209,23 @@ void setup() {
     //connectRTD(rtd1);
     rtd1[0].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
-    
-    Serial.println("+");
+
     rtd1[0].read_all();
     Serial.println(rtd1[0].temperature());
-    Serial.println("++");
-    a[0] = 1;
-    Serial.println(a[0]);
     //init_temp2 = connectRTD(rtd2, init_temp2);
     //init_temp3 = connectRTD(rtd3, init_temp3);
-
 
     // Connect to Accelerometer
  }
 
 void loop() {
-    rndArray(tempArray, 16, 20, 30);
-    pktAssemble(packet, HYMPACT, tempArray);
-
+    //rndArray(tempArray, 16, 20, 30);
+    //pktAssemble(packet, HYMPACT, tempArray);
+    
+    readTemprature(rtd1);
     for( int n = 0; n < PKTL; n++ ) {
         //Serial.write(packet[n]);
     }
-    Serial.println(a[0]);
-    Serial.println("+");
-    rtd1[0].read_all();
-    Serial.println(rtd1[0].temperature());
-    Serial.println("++");
+
     delay(100);
 }
