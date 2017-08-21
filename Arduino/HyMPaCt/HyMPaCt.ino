@@ -13,20 +13,29 @@
 #define CRC16     0x8005
 
 // Define digital pins for RTD-to-digital sensors
-#define RTD_CS_PIN1   11
-#define RTD_CS_PIN2   12
-#define RTD_CS_PIN3   13
+#define RTD_CS_PIN1   41
+#define RTD_CS_PIN2   43
+#define RTD_CS_PIN3   45
 
-MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1);
-MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2);
-MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3);
+// Reference resistance in Ohm
+#define RREF          430.0
 
-bool        init_temp1 = false;
-bool        init_temp2 = false;
-bool        init_temp3 = false;
+MAX31865_RTD rtd1(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF);
+MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF);
+MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF);
+
+// Define analog pins for Accelerometer
+#define ACC_X       0
+#define ACC_Y       1
+#define ACC_Z       2
+
+// The sensor can meausre up to \pm 200 g
+int         scale_acc = 200;
+
+bool        init_acc = false;
 
 // If a device is found not to be online, try and reconnect
-bool        auto_reconnect = true;
+bool        auto_reconnect = false;
 
 unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
@@ -79,28 +88,34 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 }
 
 /**** Reads temperature from RTD ****/
-int readTemprature(MAX31865_RTD rtd, bool init_temp) {
-    // Not connected
-    if (init_temp == false) {
-        return -1;
-        // Should I attempt to reconnect?
-        if (auto_reconnect)
-            connectRTD(rtd, init_temp);
+int readTemprature(MAX31865_RTD& rtd) {
+    int ret = 0;
+    //Serial.println("OK");
+    
+    //rtd.read_all();
+    
+    //Serial.print("Status: "); Serial.println(rtd.status());
+        
+    if (rtd.status() == 0){
+        ret = rtd.temperature();
     }
     else {
-        rtd.read_all();
-        if (rtd.status() == 0){
-            return (int)(rtd.temperature()*100);
-        }
-        else {
-            // Error
-            return -2;
-        }
+        // Error
+        ret = -2;
     }
+
+    //Serial.print("Value: "); Serial.println(ret);
+    return ret;
+}
+
+/**** Read analog value "as is" ****/
+int readAcc(int analogPin) {
+    int raw = analogRead(analogPin);
+    return raw;
 }
 
 /**** Conncts to an RTD-to-digital interface with PT100 ****/
-bool connectRTD(MAX31865_RTD rtd, bool init_temp){
+bool connectRTD(MAX31865_RTD& rtd){
     /* Configure:
         V_BIAS enabled
         Auto-conversion
@@ -112,24 +127,26 @@ bool connectRTD(MAX31865_RTD rtd, bool init_temp){
         Low threshold:  0x0000
         High threshold:  0x7fff
     */
-    rtd.configure(true, true, false, true, MAX31865_FAULT_DETECTION_NONE,
+    rtd.configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
-    
-    if (rtd.read_all( ) == 255)
-        init_temp = false;
-    else
-        init_temp = true;  
 }
 
 /**** Generates a randomly populated array ****/
 void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     // Random preventive population
     for (int i = 0; i < lenght; i++) {
-        dummyArray[i] = random(min_v, max_v);
+        dummyArray[i] = random(min_v, max_v)*100;
     }
     
     // Populate with data I actually have
-    dummyArray[0]  = readTemprature(rtd1, init_temp1);
+    //dummyArray[0] = readTemprature(rtd1);
+
+    // Acceleration, X-Axis
+    dummyArray[5] = readAcc(ACC_X);
+    // Acceleration, Y-Axis
+    dummyArray[6] = readAcc(ACC_Y);
+    // Acceleration, Z-Axis
+    dummyArray[7] = readAcc(ACC_Z);
 }
 
 /**** Assembles a full packet of given type and value(s) ****/
@@ -175,7 +192,10 @@ void pktAssemble(unsigned char* packet, int type, int value[]) {
 }
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
+
+    // Set ADC to 12 bit
+    analogReadResolution(12);
 
     /* Initialize SPI communication. */
     SPI.begin();
@@ -186,9 +206,12 @@ void setup() {
     delay(100);
     
     // Connect RTD to read temperature data from PT-100
-    connectRTD(rtd1, init_temp1);
-    connectRTD(rtd2, init_temp2);
-    connectRTD(rtd3, init_temp3);
+    connectRTD(rtd1);
+    //init_temp2 = connectRTD(rtd2, init_temp2);
+    //init_temp3 = connectRTD(rtd3, init_temp3);
+
+
+    // Connect to Accelerometer
  }
 
 void loop() {
@@ -199,5 +222,5 @@ void loop() {
         Serial.write(packet[n]);
     }
 
-    delay(50);
+    delay(100);
 }
