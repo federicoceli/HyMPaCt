@@ -26,10 +26,10 @@
 #define ACC_Y       1
 #define ACC_Z       2
 
-MAX31865_RTD rtd1[1] = {MAX31865_RTD(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF)};
-MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF);
-MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF);
-
+// Declare temperature sensor in MAX31865 class
+MAX31865_RTD temperature_sensor[3] = {MAX31865_RTD(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF),
+                                      MAX31865_RTD(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF),
+                                      MAX31865_RTD(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF)};
 
 // The sensor can meausre up to \pm 200 g
 int         scale_acc = 200;
@@ -90,16 +90,16 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 }
 
 /**** Reads temperature from RTD ****/
-int readTemprature(MAX31865_RTD* rtd) {
+int readTemprature(MAX31865_RTD* rtd, int index) {
     float ret = 0;
     Serial.println("OK");
     
-    rtd[0].read_all();
+    rtd[index].read_all();
     
-    Serial.print("Status: "); Serial.println(rtd[0].status());
+    Serial.print("Status: "); Serial.println(rtd[index].status());
         
-    if (rtd[0].status() == 0){
-        ret = rtd[0].temperature()*100;
+    if (rtd[index].status() == 0){
+        ret = rtd[index].temperature()*100;
     }
     else {
         // Error
@@ -117,7 +117,7 @@ int readAcc(int analogPin) {
 }
 
 /**** Conncts to an RTD-to-digital interface with PT100 ****/
-bool connectRTD(MAX31865_RTD* rtd){
+bool connectRTD(MAX31865_RTD* rtd, int index){
     /* Configure:
         V_BIAS enabled
         Auto-conversion
@@ -129,7 +129,7 @@ bool connectRTD(MAX31865_RTD* rtd){
         Low threshold:  0x0000
         High threshold:  0x7fff
     */
-    rtd[0].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
+    rtd[index].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
 }
 
@@ -141,7 +141,11 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     }
     
     // Populate with data I actually have
-    dummyArray[0] = readTemprature(rtd1);
+    dummyArray[0] = readTemprature(temperature_sensor, 0);
+
+    dummyArray[1] = readTemprature(temperature_sensor, 1);
+
+    dummyArray[2] = readTemprature(temperature_sensor, 2);
 
     // Acceleration, X-Axis
     dummyArray[5] = readAcc(ACC_X);
@@ -208,10 +212,10 @@ void setup() {
     delay(100);
     
     // Connect RTD to read temperature data from PT-100
-    connectRTD(rtd1);
-    //init_temp2 = connectRTD(rtd2, init_temp2);
-    //init_temp3 = connectRTD(rtd3, init_temp3);
-
+    connectRTD(temperature_sensor, 0);
+    connectRTD(temperature_sensor, 1);
+    connectRTD(temperature_sensor, 2);
+    
     // Connect to Accelerometer
  }
 
