@@ -129,7 +129,7 @@ bool connectRTD(MAX31865_RTD* rtd){
         Low threshold:  0x0000
         High threshold:  0x7fff
     */
-    rtd->configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
+    rtd[0].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
         true, true, 0x0000, 0x7fff);
 }
 
@@ -141,7 +141,7 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     }
     
     // Populate with data I actually have
-    //dummyArray[0] = readTemprature(rtd1);
+    dummyArray[0] = readTemprature(rtd1);
 
     // Acceleration, X-Axis
     dummyArray[5] = readAcc(ACC_X);
@@ -209,11 +209,6 @@ void setup() {
     
     // Connect RTD to read temperature data from PT-100
     connectRTD(rtd1);
-    rtd1[0].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
-        true, true, 0x0000, 0x7fff);
-
-    rtd1[0].read_all();
-    Serial.println(rtd1[0].temperature());
     //init_temp2 = connectRTD(rtd2, init_temp2);
     //init_temp3 = connectRTD(rtd3, init_temp3);
 
@@ -223,12 +218,9 @@ void setup() {
 void loop() {
     rndArray(tempArray, 16, 20, 30);
     pktAssemble(packet, HYMPACT, tempArray);
-    Serial.println("llll");
-    
-    readTemprature(rtd1);
 
     for( int n = 0; n < PKTL; n++ ) {
-        //Serial.write(packet[n]);
+        Serial.write(packet[n]);
     }
 
     delay(100);
