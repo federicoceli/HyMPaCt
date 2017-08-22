@@ -39,10 +39,10 @@ bool        init_acc = false;
 // If a device is found not to be online, try and reconnect
 bool        auto_reconnect = false;
 
-unsigned int    seq_number[9];
+unsigned int    seq_number[10];
 unsigned char   packet[PKTL];
-int             dummyArray[8] = { 24, 20, 200, -300, -5, 31, 32, -56 },
-                tempArray[8];
+int             dummyArray[16] = { 24, 20, 200, -300, -5, 31, 32, -56 },
+                tempArray[16];
 
 /**** Checksum calculation ****/
 uint16_t calculateCheckSum(unsigned char *buf, unsigned int n) {
@@ -221,8 +221,8 @@ void setup() {
  }
 
 void loop() {
-    //rndArray(tempArray, 16, 20, 30);
-    //pktAssemble(packet, HYMPACT, tempArray);
+    rndArray(tempArray, 16, 20, 30);
+    pktAssemble(packet, HYMPACT, tempArray);
     Serial.println("llll");
     
     readTemprature(rtd1);
