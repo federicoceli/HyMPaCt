@@ -1,5 +1,6 @@
 #include <SPI.h>
 #include <MAX31865.h>
+#include <Adafruit_MAX31865.h>
 
 /**** Variables definition ****/
 // Define Serial Protocol
@@ -20,14 +21,16 @@
 // Reference resistance in Ohm
 #define RREF          430.0
 
-MAX31865_RTD rtd1[1] = {MAX31865_RTD(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF)};
-MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF);
-MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF);
-
 // Define analog pins for Accelerometer
 #define ACC_X       0
 #define ACC_Y       1
 #define ACC_Z       2
+
+//MAX31865_RTD rtd1[1] = {MAX31865_RTD(MAX31865_RTD::RTD_PT100, RTD_CS_PIN1, RREF)};
+MAX31865_RTD rtd2(MAX31865_RTD::RTD_PT100, RTD_CS_PIN2, RREF);
+MAX31865_RTD rtd3(MAX31865_RTD::RTD_PT100, RTD_CS_PIN3, RREF);
+
+Adafruit_MAX31865 max[1] = {Adafruit_MAX31865(41)};
 
 // The sensor can meausre up to \pm 200 g
 int         scale_acc = 200;
@@ -41,7 +44,7 @@ unsigned int    seq_number[9];
 unsigned char   packet[PKTL];
 int             dummyArray[8] = { 24, 20, 200, -300, -5, 31, 32, -56 },
                 tempArray[8];
-int a[1] = {0};
+
 /**** Checksum calculation ****/
 uint16_t calculateCheckSum(unsigned char *buf, unsigned int n) {
   uint16_t checksum = 0;
@@ -86,6 +89,46 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
     }
     return out;
 }
+
+
+float getTemp(Adafruit_MAX31865* max){
+    uint16_t rtd = max[0].readRTD();
+    float    temp = 0;
+  
+    Serial.print("RTD value: "); Serial.println(rtd);
+    float ratio = rtd;
+    ratio /= 32768;
+    temp = max[0].temperature(100, RREF);
+    Serial.print("Ratio = "); Serial.println(ratio,8);
+    Serial.print("Resistance = "); Serial.println(RREF*ratio,8);
+    Serial.print("Temperature = "); Serial.println(temp);
+  
+    // Check and print any faults
+    uint8_t fault = max[0].readFault();
+    if (fault) {
+      Serial.print("Fault 0x"); Serial.println(fault, HEX);
+      if (fault & MAX31865_FAULT_HIGHTHRESH) {
+        Serial.println("RTD High Threshold"); 
+      }
+      if (fault & MAX31865_FAULT_LOWTHRESH) {
+        Serial.println("RTD Low Threshold"); 
+      }
+      if (fault & MAX31865_FAULT_REFINLOW) {
+        Serial.println("REFIN- > 0.85 x Bias"); 
+      }
+      if (fault & MAX31865_FAULT_REFINHIGH) {
+        Serial.println("REFIN- < 0.85 x Bias - FORCE- open"); 
+      }
+      if (fault & MAX31865_FAULT_RTDINLOW) {
+        Serial.println("RTDIN- < 0.85 x Bias - FORCE- open"); 
+      }
+      if (fault & MAX31865_FAULT_OVUV) {
+        Serial.println("Under/Over voltage"); 
+      }
+      max[0].clearFault();
+    }
+    return temp;
+  }
 
 /**** Reads temperature from RTD ****/
 int readTemprature(MAX31865_RTD* rtd) {
@@ -198,20 +241,22 @@ void setup() {
     analogReadResolution(12);
 
     /* Initialize SPI communication. */
-    SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV16);
-    SPI.setDataMode(SPI_MODE3);
+    //SPI.begin();
+    //SPI.setClockDivider(SPI_CLOCK_DIV16);
+    //SPI.setDataMode(SPI_MODE3);
     
     /* Allow the MAX31865 to warm up. */
-    delay(100);
+    //delay(100);
     
     // Connect RTD to read temperature data from PT-100
     //connectRTD(rtd1);
-    rtd1[0].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
-        true, true, 0x0000, 0x7fff);
+    //rtd1[0].configure(true, true, false, false, MAX31865_FAULT_DETECTION_NONE,
+    //    true, true, 0x0000, 0x7fff);
 
-    rtd1[0].read_all();
-    Serial.println(rtd1[0].temperature());
+    //rtd1[0].read_all();
+    max[0].begin(MAX31865_4WIRE);
+
+    //Serial.println(rtd1[0].temperature());
     //init_temp2 = connectRTD(rtd2, init_temp2);
     //init_temp3 = connectRTD(rtd3, init_temp3);
 
@@ -219,10 +264,14 @@ void setup() {
  }
 
 void loop() {
-    //rndArray(tempArray, 16, 20, 30);
-    //pktAssemble(packet, HYMPACT, tempArray);
-    
-    readTemprature(rtd1);
+    rndArray(tempArray, 16, 20, 30);
+    pktAssemble(packet, HYMPACT, tempArray);
+    Serial.println("llll");
+    float t = 0;
+    t = getTemp(max);
+    Serial.print("MAIN: "); Serial.println(t);
+    Serial.println();
+
     for( int n = 0; n < PKTL; n++ ) {
         //Serial.write(packet[n]);
     }
