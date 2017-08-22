@@ -41,7 +41,7 @@ bool        auto_reconnect = false;
 
 unsigned int    seq_number[10];
 unsigned char   packet[PKTL];
-int             dummyArray[16] = { 24, 20, 200, -300, -5, 31, 32, -56 },
+int             dummyArray[16] = { -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 15, 100, -1000 },
                 tempArray[16];
 
 /**** Checksum calculation ****/
@@ -92,12 +92,9 @@ uint16_t calculateCRC(const uint8_t *data, uint16_t size){
 /**** Reads temperature from RTD ****/
 int readTemprature(MAX31865_RTD* rtd, int index) {
     float ret = 0;
-    Serial.println("OK");
     
     rtd[index].read_all();
-    
-    Serial.print("Status: "); Serial.println(rtd[index].status());
-        
+         
     if (rtd[index].status() == 0){
         ret = rtd[index].temperature()*100;
     }
@@ -105,8 +102,6 @@ int readTemprature(MAX31865_RTD* rtd, int index) {
         // Error
         ret = -2;
     }
-
-    Serial.print("Value: "); Serial.println(ret/100);
     return ret;
 }
 
@@ -142,7 +137,7 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     
     // Populate with data I actually have
     dummyArray[0] = readTemprature(temperature_sensor, 0);
-
+    Serial.println(dummyArray[0]);
     dummyArray[1] = readTemprature(temperature_sensor, 1);
 
     dummyArray[2] = readTemprature(temperature_sensor, 2);
@@ -220,7 +215,7 @@ void setup() {
  }
 
 void loop() {
-    rndArray(tempArray, 16, 20, 30);
+    rndArray(tempArray, 16, 40, 50);
     pktAssemble(packet, HYMPACT, tempArray);
 
     for( int n = 0; n < PKTL; n++ ) {
