@@ -137,7 +137,7 @@ void rndArray(int* dummyArray, int lenght, int min_v, int max_v) {
     
     // Populate with data I actually have
     dummyArray[0] = readTemprature(temperature_sensor, 0);
-    Serial.println(dummyArray[0]);
+
     dummyArray[1] = readTemprature(temperature_sensor, 1);
 
     dummyArray[2] = readTemprature(temperature_sensor, 2);
