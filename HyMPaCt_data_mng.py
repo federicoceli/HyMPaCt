@@ -84,7 +84,7 @@ obj_temp  = data['ObjT']
 style.use('seaborn-white')
 
 # Create a figure
-f, ((plot_temp1, plot_temp2, plot_temp3), (plot_voltage, plot_current, plot_acc)) = plt.subplots(2, 3)
+f, ((plot_temp1, plot_temp2, plot_temp3), (plot_voltage, plot_power, plot_acc)) = plt.subplots(2, 3)
 
 # Sub plot 11
 temp1 = temp1/100
@@ -107,11 +107,12 @@ format_plot(plot_temp3, 'TEC Object (blue) and Sink (red) temperatures', 'Temper
 # Sub plot 21
 plot_voltage.plot(time, volt, orange)
 plot_voltage.plot(time, current, 'g')   
-format_plot(plot_voltage, 'TEC Voltage (Orange) and Current (Green)', 'Tension [V]')
+format_plot(plot_voltage, 'TEC Voltage (Orange) and Current (Green)', 'Tension [V] / Current [A]')
 
 # Sub plot 22
-plot_current.plot(time, current)   
-format_plot(plot_current, 'TEC Current', 'Current [A]')
+power = current*volt
+plot_power.plot(time, power)   
+format_plot(plot_power, 'TEC Power', 'Eletrical Power [W]')
 
 # Sub plot 23
 plot_acc.plot(time, acc_x, 'y')
