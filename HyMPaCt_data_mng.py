@@ -57,17 +57,25 @@ while valid_file == False :
 data = pd.read_excel(user_file_cleared)
 
 # Create a variable for every single columns
+# PT100
 time    = data['Time']
 temp1   = data['Temp1']
 temp2   = data['Temp2']
 temp3   = data['Temp3']
 
+# Accelerometer
 acc_x   = data['ACC_X']
 acc_y   = data['ACC_Y']
 acc_z   = data['ACC_Z']
 
+# TEC DC
 volt    = data['Voltage']
 current = data['Current']
+
+# TEC Temperatures
+sink_temp = data['SinkT']
+obj_temp  = data['ObjT']
+
 
 # Use better looking style
 style.use('seaborn-white')
@@ -76,16 +84,22 @@ style.use('seaborn-white')
 f, ((plot_temp1, plot_temp2, plot_temp3), (plot_voltage, plot_current, plot_acc)) = plt.subplots(2, 3)
 
 # Sub plot 11
+temp1 = temp1/100
 plot_temp1.plot(time, temp1)
+
+temp2 = temp2/100
+plot_temp1.plot(time, temp2)
 format_plot(plot_temp1, 'Temperature 1', 'Temperature [°C]')
 
 # Sub plot 12
-plot_temp2.plot(time, temp2)
+temp3 = temp3/100
+plot_temp2.plot(time, temp3)
 format_plot(plot_temp2, 'Temperature 2', 'Temperature [°C]')
 
 # Sub plot 13
-plot_temp3.plot(time, temp3)
-format_plot(plot_temp3, 'Temperature 3', 'Temperature [°C]')
+plot_temp3.plot(time, sink_temp, 'r')
+plot_temp3.plot(time, obj_temp, 'c')
+format_plot(plot_temp3, 'TEC Object (blue) and Sink (red) temperatures', 'Temperature [°C]')
 
 # Sub plot 21
 plot_voltage.plot(time, volt)
