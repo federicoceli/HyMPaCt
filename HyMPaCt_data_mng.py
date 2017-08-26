@@ -13,7 +13,10 @@ import os.path
 
 # Window height and width
 W_HEIGHT = 1200
-W_WIDTH = 850   
+W_WIDTH = 850  
+
+# More colors!
+orange = '#ff8000'
 
 # Formats the plots in the same fashion
 def format_plot(plot, title, ylable) :
@@ -102,8 +105,9 @@ plot_temp3.plot(time, obj_temp, 'c')
 format_plot(plot_temp3, 'TEC Object (blue) and Sink (red) temperatures', 'Temperature [°C]')
 
 # Sub plot 21
-plot_voltage.plot(time, volt)
-format_plot(plot_voltage, 'TEC Voltage', 'Tension [V]')
+plot_voltage.plot(time, volt, orange)
+plot_voltage.plot(time, current, 'g')   
+format_plot(plot_voltage, 'TEC Voltage (Orange) and Current (Green)', 'Tension [V]')
 
 # Sub plot 22
 plot_current.plot(time, current)   
