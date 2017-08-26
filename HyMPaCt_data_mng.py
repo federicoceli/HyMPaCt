@@ -110,10 +110,10 @@ plot_current.plot(time, current)
 format_plot(plot_current, 'TEC Current', 'Current [A]')
 
 # Sub plot 23
-plot_acc.plot(time, acc_x)
-plot_acc.plot(time, acc_y)
-plot_acc.plot(time, acc_z)
-format_plot(plot_acc, '3-Axis Acceleration', 'Accelerartion [g]')
+plot_acc.plot(time, acc_x, 'y')
+plot_acc.plot(time, acc_y, 'g')
+plot_acc.plot(time, acc_z, 'r')
+format_plot(plot_acc, '3-Axis Acceleration XYZ = YGR', 'Accelerartion [g]')
 
 # Resize figure 
 mng = plt.get_current_fig_manager()
@@ -121,8 +121,9 @@ mng.resize(W_HEIGHT, W_WIDTH)
 
 # TODO adjust wspace and hspace
 
-# Show the plot
+# Make a better formatting and show the plot
 plt.tight_layout()
+f.subplots_adjust(left = 0.06, right = 0.98, bottom = 0.09, top = 0.93, wspace = 0.26, hspace = 0.44)
 plt.show()
 
 print("The end\n")
