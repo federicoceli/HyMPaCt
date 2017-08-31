@@ -96,7 +96,7 @@ int readTemprature(MAX31865_RTD* rtd, int index) {
     rtd[index].read_all();
          
     if (rtd[index].status() == 0){
-        ret = rtd[index].temperature()*100;
+        ret = rtd[index].temperature()*10000;
     }
     else {
         // Error
